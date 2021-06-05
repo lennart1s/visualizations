@@ -4,6 +4,8 @@ var HEIGHT = 850
 var numBoids = 75
 var boids = []
 
+var predator
+
 function setup() {
     var canv = createCanvas(WIDTH, HEIGHT)
     canv.parent("canvas")
@@ -17,18 +19,24 @@ function init() {
     for (i = 0; i < numBoids; i++) {
         boids[i] = new Boid(random(WIDTH), random(HEIGHT))
     }
+
+    predator = new Predator(random(WIDTH), random(HEIGHT))
 }
 
 function draw() {
     for (b of boids) {
         b.update()
     }
-    
+    if (PREDATOR_ENABLED) {
+        predator.update()
+    }
 
     background(68, 70, 75)
-
     for (b of boids) {
         b.draw()
+    }
+    if (PREDATOR_ENABLED) {
+        predator.draw()
     }
 }
 
@@ -73,6 +81,12 @@ function menuItemChanged(item) {
             break
         case "term-vel":
             BOID_TERM_VEL = int(item.value)
+            break
+        case "predator":
+            PREDATOR_ENABLED = item.checked
+            break
+        case "mouse-ctl":
+            predator.pointerControll = item.checked
             break
     }
 }

@@ -6,6 +6,7 @@
 
         <script src="index.js"></script>
         <script src="Boid.js"></script>
+        <script src="Predator.js"></script>
         <script src="../p5.min.js"></script>
 
         <link rel="stylesheet" href="style.css">
@@ -42,6 +43,13 @@
                 </br>
                 <label for="term-vel">Term. velocity:</label>
                 <input id="term-vel" type="range" min="50" max="500" value="280" oninput="menuItemChanged(this)">
+                </br>
+                </br>
+                <label for="predator">Enable Predator:</label>
+                <input id="predator" type="checkbox" oninput="menuItemChanged(this)">
+                </br>
+                <label for="mouse-ctl">Mouse Controll:</label>
+                <input id="mouse-ctl" type="checkbox" oninput="menuItemChanged(this)">
                 </br>
                 </br>
                 <label for="boid-radius">Body radius:</label>

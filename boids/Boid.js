@@ -60,7 +60,7 @@ class Boid {
             }
             if (boidsSeen > 0) {
                 com.div(boidsSeen)
-                    var f = new p5.Vector(com.x-this.pos.x, com.y-this.pos.y).setMag(-BOID_ACC_FORCE*3)
+                var f = new p5.Vector(com.x-this.pos.x, com.y-this.pos.y).setMag(-BOID_ACC_FORCE*3)
                 this.acc.add(f)
             }
         }
@@ -79,6 +79,15 @@ class Boid {
                 avgHeading.div(boidsSeen)
             
                 this.acc.add(avgHeading.setMag(BOID_ACC_FORCE*0.6))
+            }
+        }
+
+        // PREDATOR
+        if (PREDATOR_ENABLED) {
+            if (this.pos.dist(predator.pos) <= BOID_VISUAL_RANGE) {
+                var f = new p5.Vector(predator.pos.x-this.pos.x, predator.pos.y-this.pos.y)
+                    .setMag(-BOID_ACC_FORCE*5)
+                this.acc.add(f)
             }
         }
         
