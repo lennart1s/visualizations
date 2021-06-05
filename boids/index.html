@@ -1,0 +1,66 @@
+<html>
+
+    <head>
+        <title>Boids - Visualized</title>
+        <meta name="author" content="Lennart Sandbothe">
+
+        <script src="index.js"></script>
+        <script src="Boid.js"></script>
+        <script src="../p5.min.js"></script>
+
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        Boids
+        <div id="canvas">
+
+            
+            <div id="menu">
+                <label for="num-boids">Num Boids:</label>
+                <input id="num-boids" type="number" value="75" onchange="menuItemChanged(this)">
+                </br>
+                <label for="cohesion">Cohesion:</label>
+                <input id="cohesion" type="checkbox" checked="true" oninput="menuItemChanged(this)">
+                </br>
+                <label for="seperation">Seperation:</label>
+                <input id="seperation" type="checkbox" checked="true" oninput="menuItemChanged(this)">
+                </br>
+                <label for="alignment">Alignment:</label>
+                <input id="alignment" type="checkbox" checked="true" oninput="menuItemChanged(this)">
+                </br>
+                </br>
+                <label for="vis-range">Visual range:</label>
+                <input id="vis-range" type="range" min="50" max="300" value="200" oninput="menuItemChanged(this)">
+                </br>
+                <label for="sep-range">Seperation range:</label>
+                <input id="sep-range" type="range" min="5" max="300" value="50" oninput="menuItemChanged(this)">
+                </br>
+                </br>
+                <label for="acc-force">Acceleration:</label>
+                <input id="acc-force" type="range" min="50" max="500" value="280" oninput="menuItemChanged(this)">
+                </br>
+                <label for="term-vel">Term. velocity:</label>
+                <input id="term-vel" type="range" min="50" max="500" value="280" oninput="menuItemChanged(this)">
+                </br>
+                </br>
+                <label for="boid-radius">Body radius:</label>
+                <input id="boid-radius" type="range" min="2" max="25" value="10" oninput="menuItemChanged(this)">
+                </br>
+                <label for="show-acc">Show Acc:</label>
+                <input id="show-acc" type="checkbox" checked="true" oninput="menuItemChanged(this)">
+                </br>
+                <label for="show-vel">Show Vel:</label>
+                <input id="show-vel" type="checkbox" checked="true" oninput="menuItemChanged(this)">
+                </br>
+                <label for="show-vis-range">Show visual range:</label>
+                <input id="show-vis-range" type="checkbox" oninput="menuItemChanged(this)">
+                </br>
+                <label for="show-sep-range">Show seperation range:</label>
+                <input id="show-sep-range" type="checkbox" oninput="menuItemChanged(this)">
+            </div>
+        </div>
+
+    </body>
+
+</html>
