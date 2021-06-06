@@ -136,6 +136,13 @@ input[type=range]::-ms-track {
     bottom: 0%;
 
     background-color: rgb(49, 49, 49);
+}
+
+#examples > div {
+    position: relative;
+
+    height: 90%;
+
     display: inline-block;
     display: flex;
     flex-direction: column;
@@ -143,11 +150,17 @@ input[type=range]::-ms-track {
 
     overflow-y: scroll;
     overflow-x: hidden;
+    scrollbar-width: none
+}
+
+::-webkit-scrollbar {
+    width: 0;
+    background: transparent;  
 }
 
 .example-card {
     width: 60%;
-    height: 120px;
+    height: 100px;
     display: inline-block;
 
     margin: 15px auto;
