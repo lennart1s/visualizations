@@ -5,6 +5,7 @@
         <meta name="author" content="Lennart Sandbothe">
 
         <script src="index.js"></script>
+        <script src="examples.js"></script>
         <script src="../p5.min.js"></script>
 
         <link rel="stylesheet" href="style.css">
@@ -34,6 +35,36 @@
             </br>
             </br>
                 <button id="clearBtn" onclick="reset()">Clear</button>
+            </div>
+
+            <div id="examples">
+                <h2>Examples</h2>
+
+                <div class="example-card" onclick="placeExample('blinker')">
+                    <h3>Blinker</h3>
+                    <img src="./res/blinker.png">
+                </div>
+
+                <div class="example-card" onclick="placeExample('glider')">
+                    <h3>Glider</h3>
+                    <img src="./res/glider.png">
+                </div>
+
+                <div class="example-card" onclick="placeExample('pulsar')">
+                    <h3>Pulsar</h3>
+                    <img src="./res/pulsar.png">
+                </div>
+
+                <div class="example-card" onclick="placeExample('spaceship')">
+                    <h3>Spaceship</h3>
+                    <img src="./res/spaceship.png">
+                </div>
+
+                <div class="example-card" onclick="placeExample('glidergun')">
+                    <h3>Glider Gun</h3>
+                    <img src="./res/glidergun.png">
+                </div>
+
             </div>
         </div>
 
