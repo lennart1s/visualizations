@@ -7,8 +7,8 @@ var boids = []
 var predator
 
 function setup() {
-    var canv = createCanvas(WIDTH, HEIGHT)
-    canv.parent("canvas")
+    var canvas = createCanvas(WIDTH, HEIGHT)
+    canvas.parent("canvas")
     frameRate(30)
 
     init()
