@@ -4,6 +4,10 @@ var gridSize = 20
 
 var cells = []
 
+var generation = 0
+var running = false
+var sps = 2
+
 function setup() {
     var canvas = createCanvas(cols*gridSize, rows*gridSize)
     canvas.parent("canvas")
@@ -18,6 +22,11 @@ function setup() {
 }
 
 function draw() {
+    if (running) {
+        process()
+    }
+
+    document.getElementById("gen").innerHTML = "Generation: "+generation
     background(60, 48, 69)
 
     for (x = 0; x < cols; x++) {
@@ -34,6 +43,8 @@ function draw() {
 }
 
 function process() {
+    generation++
+
     var prev = []
     for (x = 0; x < cols; x++) {
         var row = []
@@ -71,12 +82,15 @@ function process() {
         }
     }
     if (!found) {
-        //running = false
-        //frameRate(30)
+        stop()
     }
 }
 
 function mouseClicked() {
+    if (running) {
+        return
+    }
+    
     var c = int(mouseX / gridSize)
     var r = int(mouseY / gridSize)
 
@@ -97,4 +111,32 @@ function reset() {
             cells[x][y] = 0
         }
     }
+
+    generation = 0
+}
+
+function start() {
+    running = true;
+    frameRate(int(sps))
+    document.getElementById("startBtn").disabled = true
+    document.getElementById("stopBtn").disabled = false
+    document.getElementById("nextBtn").disabled = true
+    document.getElementById("clearBtn").disabled = true
+}
+
+function stop() {
+    running = false;
+    frameRate(30)
+    document.getElementById("startBtn").disabled = false
+    document.getElementById("stopBtn").disabled = true
+    document.getElementById("nextBtn").disabled = false
+    document.getElementById("clearBtn").disabled = false
+}
+
+function sliderLbl(sld) {
+    sps = sld.value
+    if (running) {
+        frameRate(int(sps))
+    }
+    sld.previousElementSibling.innerHTML = "Steps per second: "+sld.value
 }

@@ -32,9 +32,28 @@ h1 {
     text-align: center;
     font-size: 3rem;
     text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5);
+
+    margin-bottom: 35px;
+}
+
+h2 {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    font-size: 1.7rem;
+    text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.5);
+}
+
+h3 {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    font-size: 1.15rem;
+    text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.3);
 }
 
 button {
+    cursor: pointer;
     margin: 10px auto;
     width: 3.8em;
     height: 1.7em;
@@ -47,10 +66,10 @@ button {
     /*text-shadow: 1px 1px 4px rgba(255, 255, 255, 0.7);*/
 
     border-radius: 0.3em;
-    box-shadow: 1px 2px 8px 4px rgba(143, 21, 143, 0.5);
+    box-shadow: 1px 2px 8px 4px rgba(153, 23, 153, 0.5);
 }
 
-button:hover {
+button:hover:enabled {
     transition: 0.1s;
     transform: scale(1.05);
 
@@ -60,7 +79,51 @@ button:hover {
     box-shadow: 1px 2px 15px 7px rgba(206, 31, 206, 0.5);
 }
 
-button:active {
+button:active:enabled {
     transition: 0.1s;
     transform: scale(0.9);
+}
+
+button:disabled {
+    background-color: rgb(139, 59, 139);
+    color: rgb(180, 180, 180);
+    box-shadow: 1px 2px 8px 4px rgba(153, 23, 153, 0.2);
+    cursor: default;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    background: rgb(230, 230, 230);
+    width: 60%;
+    margin: 5px auto;
+    height: 0.3em;
+    border-radius: 0.3em;
+
+    margin-bottom: 20px;
+}
+input[type=range]:active {
+    transition: 0.1s;
+    background-color: white;
+    box-shadow: 0px 0px 3px 1px rgba(255, 255, 255, 0.3);
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 1.5em;
+    background-color: rgb(223, 39, 223);
+    box-shadow: 1px 2px 10px 5px rgba(167, 25, 167, 0.3);
+    cursor: pointer;
+}
+input[type=range]:active::-webkit-slider-thumb,
+input[type=range]:hover::-webkit-slider-thumb {
+    transition: 0.1s;
+    background-color: rgb(247, 37, 247);
+    box-shadow: 1px 2px 10px 5px rgba(206, 31, 206, 0.5);
+}
+
+input[type=range]::-ms-track {
+    -webkit-appearance: none;
+    background-color: green;
 }

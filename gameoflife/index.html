@@ -16,8 +16,24 @@
 
             <div id="menu">
                 <h1>Menu</h1>
-                <button onclick="process()">Next</button>
-                <button onclick="reset()">Clear</button>
+
+                <h2 id="gen">Generation: 0</h2>
+
+                <button id="nextBtn" onclick="process()">Next</button>
+            </br>
+            </br>
+            </br>
+                <h3>Steps per second: 2</h3>
+                <input type="range" min=1 max="50" value="2" oninput="sliderLbl(this)">
+            </br>
+                <button id="startBtn" onclick="start()">Start</button>
+            </br>
+                <button id="stopBtn" disabled onclick="stop()">Stop</button>
+            </br>
+            </br>
+            </br>
+            </br>
+                <button id="clearBtn" onclick="reset()">Clear</button>
             </div>
         </div>
 
