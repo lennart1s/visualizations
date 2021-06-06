@@ -24,6 +24,10 @@ function init() {
 }
 
 function draw() {
+    if (deltaTime >= 2000) {
+        deltaTime = 30
+    }
+
     for (b of boids) {
         b.update()
     }
