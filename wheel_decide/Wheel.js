@@ -15,15 +15,22 @@ class Wheel {
         rotate(this.rotation)
         for (let i = 0; i < this.sections.length; i++) {
             noStroke()
-            fill(i*70)
+            var colorIndex = 2 + i%(colors.length-2)
+            if (colorIndex == 2 && i == this.sections.length-1) {
+                colorIndex = (colors.length-2)
+            }
+            fill(colors[colorIndex])
 
             arc(0, 0, R*2, R*2, 0, 2*PI / this.sections.length)
             
-            fill(255)
-            textSize(20)
+            fill(colors[TEXT_COLOR])
+            stroke(colors[BG_COLOR])
+            strokeWeight(2)
+            textSize(25)
+            textStyle(BOLD)
             textAlign(CENTER)
             rotate(PI/this.sections.length)
-            text(this.sections[i], 0, -10, R, 20)
+            text(this.sections[i], 10, -10, R, 25)
             rotate(-(PI/this.sections.length))
 
             rotate(2*PI / this.sections.length)

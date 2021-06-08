@@ -2,14 +2,19 @@ var WIDTH = 600
 var HEIGHT = 600
 var R = WIDTH*0.8 / 2
 
+var colors = []
+
 var wheel
 
 
 function setup() {
     var canvas = createCanvas(WIDTH, HEIGHT)
     canvas.parent("canvas")
+    let cp = int(random(COLOR_PALETTES.length))
+    console.log("Using color palette: " + (cp+1))
+    colors = COLOR_PALETTES[cp]
 
-    wheel = new Wheel(["Deine Mom", "Dein Vatter", "Du Wixxer", "4", "5"])
+    wheel = new Wheel(["Deine Mom", "1awdawd awd", "apawd"])
 }
 
 function draw() {
@@ -17,12 +22,14 @@ function draw() {
 
     translate(WIDTH/2, HEIGHT/2)
 
-    background(150)
+    background(color(colors[BG_COLOR]))
     
-    for (let r = R+15; r > R; r--) {
-        fill(map(r, R, R+15, 120, 150))
+    noStroke()
+    for (let r = R+20; r > R; r--) {
+        fill(0, 0, 0, map(r, R, R+20, 1, 0.3))
         ellipse(0, 0, r*2, r*2)
     }
+
     wheel.draw()
 
     fill(250)

@@ -1,0 +1,38 @@
+body {
+    
+}
+
+#canvas {
+    width: max-content;
+    margin: 10px auto;
+    position:relative;
+}
+
+#menu {
+    top: 20px;
+    left: 20px;
+    bottom: 20px;
+    width: 250px;
+    background-color: rgba(0,0,0, 0.2);
+    position: absolute;
+    padding: 15px;
+
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#menu * {
+    margin: 5px;
+}
+
+#num-boids {
+    width: 70px;
+}
+
+#sep-range {
+    width: 90px;
+}
+
+#term-vel {
+    width: 120px;
+}
