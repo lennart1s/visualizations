@@ -9,7 +9,7 @@ function setup() {
     canvas.parent("canvas")
     frameRate(30)
     
-    B = new Box(250, 50, 100000000000000, -50, color('blue'))
+    B = new Box(250, 50, 100000000, -50, color('blue'))
     b = new Box(200, 25, 1, 0, color('red'))
 }
 
