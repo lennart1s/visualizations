@@ -1,5 +1,5 @@
 
-window.onload = function() {
+/*window.onload = function() {
     let hash = parent.location.hash.slice(1)
     hash = hash.replaceAll("%20", " ")
     let parts = hash.split("&")
@@ -26,10 +26,30 @@ window.onload = function() {
             }
         }
     }
+}**/
+
+window.onload = function() {
+    deserialize()
 }
 
+let wheel
+let titleHandler
+let optionHandler
+let winnerPromptHandler
 
-function addOption(value) {
+function init() {
+    titleHandler = new TitleHandler(document.getElementById("title-input"))
+    optionHandler = new OptionHandler(document.getElementById("menu"), wheel)
+    winnerPromptHandler = new WinnerPromptHandler(document.getElementById("winner"))
+}
+
+document.addEventListener('DOMContentLoaded', init, false)
+
+function resetPage() {
+    parent.location.hash = ""
+    window.location = "./"
+}
+/*function addOption(value) {
     let menu = document.getElementById('menu')
 
     var input = document.createElement("input")
@@ -91,9 +111,9 @@ function updateLocationHash() {
         }
     }
     parent.location.hash = hash
-}
+}*/
 
-function showWinner(text) {
+/*function showWinner(text) {
     let winner = document.getElementById("winner")
     winner.innerHTML = text
     winner.style.display = "block"
@@ -105,4 +125,4 @@ function hideWinner() {
     setTimeout(() => {
         document.getElementById("winner").style.display = "none"
     }, 500);
-}
+}*/

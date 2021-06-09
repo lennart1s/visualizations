@@ -4,10 +4,12 @@
         <title>Wheel Decide</title>
         <meta name="author" content="Lennart Sandbothe">
 
+        <script src="gui-handler.js"></script>
         <script src="color_palettes.js"></script>
         <script src="index.js"></script>
         <script src="Wheel.js"></script>
         <script src="canvas.js"></script>
+        <!--<script src="client.js"></script>-->
         <script src="../p5.min.js"></script>
 
         <link rel="stylesheet" href="style.css">
@@ -19,7 +21,7 @@
         <h1 onclick="resetPage()">WHEEL DECIDE</h1>
         <!--<h2>nothing more, nothing less</h2>-->
 
-        <input id="title-input" type="text" placeholder="Titel" onchange="titleChange(this)">
+        <input id="title-input" type="text" placeholder="Titel">
 
         <div id="canvas">
 
@@ -30,10 +32,10 @@
         </div>
 
         <div id="menu">
-            <input type="text" placeholder="Option 1" onchange="optionChange()">
+            <input type="text" placeholder="Option 1">
         </div>
         
-        <a id="new-option-btn" class="fa fa-plus-square" onclick="addOption()"></a>
+        <a id="new-option-btn" class="fa fa-plus-square" onclick="optionHandler.addInput()"></a>
         </br>
         
     </body>

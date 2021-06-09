@@ -12,6 +12,10 @@ class Wheel {
     constructor(sections) {
         this.sections = sections
     }
+
+    setSections(sections) {
+        this.sections = sections
+    }
     
     draw() {
         if (font == undefined) {
@@ -65,7 +69,8 @@ class Wheel {
         if (!mouseIsPressed && this.speed != 0 && abs(this.speed) < 0.00006) {
             this.speed = 0
             console.log("Landed on " + this.isOn())
-            showWinner(this.isOn())
+            //showWinner(this.isOn())
+            winnerPromptHandler.showWinner(this.isOn())
             lastX = undefined
             lastY = undefined
         }
@@ -89,6 +94,6 @@ function mouseClicked() {
     lastY = undefined
 
     if (sqrt((mouseX-WIDTH/2)*(mouseX-WIDTH/2)+(mouseY-HEIGHT/2)*(mouseY-HEIGHT/2)) > WIDTH/2) {
-        hideWinner()
+        winnerPromptHandler.hideWinner()
     }
 }

@@ -8,8 +8,6 @@ var R = WIDTH*0.9 / 2
 
 var colors = []
 
-var wheel
-
 function setup() {
     mqActive = getComputedStyle(root).getPropertyValue("--mq-active") == "true"
     if (mqActive) {
