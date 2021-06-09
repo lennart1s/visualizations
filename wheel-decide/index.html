@@ -1,0 +1,41 @@
+<html>
+
+    <head>
+        <title>Wheel Decide</title>
+        <meta name="author" content="Lennart Sandbothe">
+
+        <script src="color_palettes.js"></script>
+        <script src="Wheel.js"></script>
+        <script src="index.js"></script>
+        <script src="canvas.js"></script>
+        <script src="../p5.min.js"></script>
+
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+
+    <body>
+
+        <h1 onclick="resetPage()">WHEEL DECIDE</h1>
+        <!--<h2>nothing more, nothing less</h2>-->
+
+        <input id="title-input" type="text" placeholder="Titel" onchange="titleChange(this)">
+
+        <div id="canvas">
+
+            <p id="winner" style="display: none">
+                Deine Mutter
+            </p>
+
+        </div>
+
+        <div id="menu">
+            <input type="text" placeholder="Option 1" onchange="optionChange()">
+        </div>
+        
+        <a id="new-option-btn" class="fa fa-plus-square" onclick="addOption()"></a>
+        </br>
+        
+    </body>
+
+</html>

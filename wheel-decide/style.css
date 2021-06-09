@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@400;500&display=swap');
+:root {
+    --bg-color: #31343a;
+    --text-color: #999999;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-color);
+
+    text-align: center;
+
+    padding-bottom: 100px;
+}
+
+#canvas {
+    z-index: 1;
+}
+
+h1, h2, h3, p {
+    color: var(--text-color);
+    font-family: 'Baloo Tammudu 2', cursive;
+    
+    margin: 0px;
+}
+
+h1 {
+    width: fit-content;
+    margin: 50px auto -40px auto;
+    font-size: 4.5rem;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+
+    cursor: pointer;
+}
+
+h2 {
+    font-size: 2rem;
+    filter: opacity(0.9);
+
+    margin-bottom: -10px;
+}
+
+h1 ~ input {
+    transform: translate(0px, 9px);
+    
+    color: var(--text-color);
+    font-family: 'Baloo Tammudu 2', cursive;
+    font-size: 2rem;
+    font-weight: 500;
+    text-align: center;
+
+    background-color: transparent;
+    outline: none;
+
+    padding-top: 20px;
+    border: 1px solid var(--text-color);
+    border-radius: 2em;
+
+}
+h1 ~ input:hover {
+    transition: 0.5s;
+    background-color: rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}
+
+.non-empty-input {
+    border: none;
+}
+
+#canvas {
+    width: max-content;
+    margin: 10px auto;
+    position:relative;
+}
+
+#menu {
+    width: 80%;
+    max-width: 300px;
+    margin: 10px auto;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#menu > input{
+    height: 50px;
+    margin-bottom: 10px;
+    box-shadow: 1px 1px 5px 3px rgba(0, 0, 0, 0.1),
+        inset 1px 1px 5px 3px rgba(0, 0, 0, 0.1);
+    color: var(--text-color);
+    font-family: 'Baloo Tammudu 2', cursive;
+    font-size: 1.5rem;
+    text-align: center;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+
+    background-color: transparent;
+    outline: none;
+
+    padding-top: 20px;
+    border: 1px solid var(--text-color);
+    border-radius: 2em;
+}
+
+#new-option-btn {
+    font-size: 2.5em;
+    color: var(--text-color);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+#new-option-btn:hover {
+    transition: 0.4s;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+    transform: scale(1.1);
+    animation: pulse 1s linear infinite;
+}
+
+@keyframes pulse {
+    0% {transform: scale(1.1);}
+    25% {transform: scale(1.2);}
+    75% {transform: scale(1);}
+    100%{transform: scale(1.1);}
+}
+
+#new-option-btn:active {
+    transition: 0.2s;
+    animation: none;
+    transform: scale(0.9);
+    filter: opacity(0.6);
+}
+
+#winner {
+    position: absolute;
+    background-color: var(--text-color);
+    box-shadow: 1px 1px 9px 5px rgba(0, 0, 0, 0.4);
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: calc(500px * 0.92);
+    height: calc(500px * 0.92);
+    border-radius: 250px;
+
+    z-index: 100;
+
+    color: var(--bg-color);
+    font-family: 'Baloo Tammudu 2', cursive;
+    font-size: 3rem;
+    font-weight: 500;
+    text-align: center;
+    line-height: 470px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.appear {
+    animation: come-up 0.5s ease-in-out;
+}
+
+@keyframes come-up{
+    from {transform: translate(-50%, -50%) scale(0);}
+    to {transform: translate(-50%, -50%) scale(1);}
+}
+
+.disappear {
+    animation: disappear 0.5s forwards;
+}
+
+@keyframes disappear {
+    from {transform: translate(-50%, -50%) scale(1);}
+    to {transform: translate(-50%, -50%) scale(0);}
+}
