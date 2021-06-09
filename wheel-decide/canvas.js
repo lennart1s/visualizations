@@ -1,7 +1,9 @@
 let root = document.documentElement;
+let mqActive
 
 var WIDTH = 500
 var HEIGHT = 500
+
 var R = WIDTH*0.9 / 2
 
 var colors = []
@@ -9,6 +11,13 @@ var colors = []
 var wheel
 
 function setup() {
+    mqActive = getComputedStyle(root).getPropertyValue("--mq-active") == "true"
+    if (mqActive) {
+        pixelDensity(1)
+        WIDTH = 800
+        HEIGHT = 800
+        R = WIDTH*0.9 / 2
+    }
     // Canvas creation
     var canvas = createCanvas(WIDTH, HEIGHT)
     canvas.parent("canvas")
@@ -46,5 +55,9 @@ function draw() {
 
     // Draw pointer
     fill(250)
-    triangle(R+10, 0, R+30, 10, R+30, -10)
+    if (!mqActive) {
+        triangle(R+10, 0, R+30, 10, R+30, -10)
+    } else {
+        triangle(R+10, 0, WIDTH/2, 30, WIDTH/2, -30)
+    }
 }

@@ -2,18 +2,31 @@
 :root {
     --bg-color: #31343a;
     --text-color: #999999;
+    --mq-active:false;
 }
 
 html {
     scroll-behavior: smooth;
+    font-size: 100%;
 }
+
+@media only screen and (max-device-width: 500px) {
+    :root {
+        --mq-active:true;
+    }
+    html {
+        scroll-behavior: smooth;
+        font-size: 150%;
+    }
+}
+
 
 body {
     background-color: var(--bg-color);
 
     text-align: center;
 
-    padding-bottom: 100px;
+    padding-bottom: 30px;
 }
 
 #canvas {
@@ -29,8 +42,8 @@ h1, h2, h3, p {
 
 h1 {
     width: fit-content;
-    margin: 50px auto -40px auto;
-    font-size: 4.5rem;
+    margin: 40px auto -30px auto;
+    font-size: 5.2em;
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
 
     cursor: pointer;
@@ -45,10 +58,12 @@ h2 {
 
 h1 ~ input {
     transform: translate(0px, 9px);
-    
+    max-width: 80%;
+
     color: var(--text-color);
     font-family: 'Baloo Tammudu 2', cursive;
-    font-size: 2rem;
+    font-size: 2.5rem;
+    height: 4.5rem;
     font-weight: 500;
     text-align: center;
 
@@ -57,7 +72,7 @@ h1 ~ input {
 
     padding-top: 20px;
     border: 1px solid var(--text-color);
-    border-radius: 2em;
+    border-radius: 3rem;
 
 }
 h1 ~ input:hover {
@@ -86,8 +101,8 @@ h1 ~ input:hover {
 }
 
 #menu > input{
-    height: 50px;
-    margin-bottom: 10px;
+    height: 3rem;
+    margin-bottom: 1rem;
     box-shadow: 1px 1px 5px 3px rgba(0, 0, 0, 0.1),
         inset 1px 1px 5px 3px rgba(0, 0, 0, 0.1);
     color: var(--text-color);
@@ -99,15 +114,38 @@ h1 ~ input:hover {
     background-color: transparent;
     outline: none;
 
-    padding-top: 20px;
+    padding-top: 1rem;
     border: 1px solid var(--text-color);
-    border-radius: 2em;
+    border-radius: 2rem;
+}
+
+@media only screen and (max-device-width: 500px) {
+    #menu {
+        max-width: 80%;
+    }
+    
+    #menu > input {
+        height: 5rem;
+        width: 100%;
+        font-size: 3rem;
+        padding-top: 1.5rem;
+    }
+
+    #new-option-btn {
+        font-size: 10rem;
+    }
 }
 
 #new-option-btn {
-    font-size: 2.5em;
+    font-size: 2.5rem;
     color: var(--text-color);
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+@media only screen and (max-device-width: 500px) {
+#new-option-btn {
+    font-size: 5rem;
+}
 }
 
 #new-option-btn:hover {
@@ -155,6 +193,14 @@ h1 ~ input:hover {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+@media only screen and (max-device-width: 500px) {
+    #winner {
+        width: calc(800px * 0.92);
+        height: calc(800px * 0.92);
+        border-radius: 400px;
+    }
 }
 
 .appear {

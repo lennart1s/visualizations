@@ -1,6 +1,8 @@
 var lastX
 var lastY
 
+var font
+
 class Wheel {
     sections = []
 
@@ -10,8 +12,12 @@ class Wheel {
     constructor(sections) {
         this.sections = sections
     }
-
+    
     draw() {
+        if (font == undefined) {
+            font = loadFont('res/BalooTammudu2-Medium.ttf')
+        }
+        
         rotate(this.rotation)
         for (let i = 0; i < this.sections.length; i++) {
             noStroke()
@@ -26,11 +32,13 @@ class Wheel {
             fill(colors[TEXT_COLOR])
             stroke(colors[BG_COLOR])
             strokeWeight(2)
-            textSize(25)
+            textFont(font)
+            textSize((mqActive)?50:30)
+            
             textStyle(BOLD)
             textAlign(CENTER)
             rotate(PI/this.sections.length)
-            text(this.sections[i], 10, -10, R, 25)
+            text(this.sections[i], 10, (mqActive)?-40:-25, R-10, (mqActive)?60:40)
             rotate(-(PI/this.sections.length))
 
             rotate(2*PI / this.sections.length)
@@ -53,7 +61,7 @@ class Wheel {
 
         this.rotation += this.speed * deltaTime
         this.rotation = (this.rotation > 0) ? this.rotation%(2*PI) : this.rotation%(2*PI)+2*PI
-        this.speed *= 0.99
+        this.speed *= (mqActive)?0.97:0.99
         if (!mouseIsPressed && this.speed != 0 && abs(this.speed) < 0.00006) {
             this.speed = 0
             console.log("Landed on " + this.isOn())

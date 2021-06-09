@@ -1,3 +1,4 @@
+
 window.onload = function() {
     let hash = parent.location.hash.slice(1)
     hash = hash.replaceAll("%20", " ")
