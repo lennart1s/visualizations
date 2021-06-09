@@ -66,6 +66,8 @@ class Wheel {
             this.speed = 0
             console.log("Landed on " + this.isOn())
             showWinner(this.isOn())
+            lastX = undefined
+            lastY = undefined
         }
     }
 
