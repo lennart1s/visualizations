@@ -58,4 +58,12 @@ function draw() {
     } else {
         triangle(R+10, 0, WIDTH/2, 30, WIDTH/2, -30)
     }
+
+    // Draw Master Mouse
+    if (masterMouseX != undefined && masterMouseY != undefined) {
+        console.log("draw mouse " + masterMouseX + " " + masterMouseY)
+        noStroke()
+        fill(255, 255, 255)
+        ellipse(masterMouseX-WIDTH/2, masterMouseY-HEIGHT/2, 30, 30)
+    }
 }

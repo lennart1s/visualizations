@@ -62,17 +62,28 @@ class Wheel {
                 } 
             }
         }
-
+        
         this.rotation += this.speed * deltaTime
         this.rotation = (this.rotation > 0) ? this.rotation%(2*PI) : this.rotation%(2*PI)+2*PI
         this.speed *= (mqActive)?0.97:0.99
         if (!mouseIsPressed && this.speed != 0 && abs(this.speed) < 0.00006) {
             this.speed = 0
             console.log("Landed on " + this.isOn())
-            //showWinner(this.isOn())
             winnerPromptHandler.showWinner(this.isOn())
             lastX = undefined
             lastY = undefined
+        }
+
+        if (socket != undefined && socket.readyState == WebSocket.OPEN) {
+            //socket.send("mouseX="+mouseX+"&mouseY="+mouseY+"&rot="+this.rotation+"&vel="+this.speed)
+            let data = {
+                "clientID": clientID+"",
+                "mouseX": mouseX+"",
+                "mouseY": mouseY+"",
+                "rot": this.rotation+"",
+                "vel": this.speed+""
+            }
+            socket.send(JSON.stringify(data))
         }
     }
 

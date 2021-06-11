@@ -1,0 +1,30 @@
+<html>
+
+    <head>
+        <title>Create Room - Wheel Decide</title>
+        <meta name="author" content="Lennart Sandbothe">
+
+        <script src="index.js"></script>
+        <script src="../client.js"></script>
+
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+
+    <body>
+
+        <h1>Create a Live Rotation Room</h1>
+
+        <form id="creation-form">
+            Max. Users:<input type="number" name="max-users" value="4">
+        </br>
+            Allow userSpin:<input type="checkbox" name="user-spin-allowed" disabled>
+        </br>
+            Allow userOption:<input type="checkbox" name="user-option-allowed" disabled>
+
+        </form>
+        <button onclick="sendCreationRequest()">Submit</button>
+        
+    </body>
+
+</html>

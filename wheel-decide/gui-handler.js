@@ -131,11 +131,17 @@ class WinnerPromptHandler {
         this.elem = elem
     }
 
-    showWinner(text) {
+    showWinner(text, duration) {
         this.elem.innerHTML = text
 
         this.elem.style.display = "block"
         this.elem.classList = "appear"
+
+        if (duration != undefined) {
+            setTimeout(() => {
+                this.hideWinner()
+            }, duration);
+        }
     }
 
     hideWinner() {
@@ -177,6 +183,7 @@ function deserialize() {
                 let options = parts[i].replace("options=", "").split("%11")
                 optionHandler.setOptions(options)
             }
+            break
         }
     }
 }
