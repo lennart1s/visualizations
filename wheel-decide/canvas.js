@@ -31,6 +31,7 @@ function setup() {
     if (wheel == undefined) {
         wheel = new Wheel(["Monday", "Tuesday", "Sunday"])
     }
+    wheel.controllers.push(new WinnerController(wheel))
 }
 
 function draw() {
@@ -61,7 +62,6 @@ function draw() {
 
     // Draw Master Mouse
     if (masterMouseX != undefined && masterMouseY != undefined) {
-        console.log("draw mouse " + masterMouseX + " " + masterMouseY)
         noStroke()
         fill(255, 255, 255)
         ellipse(masterMouseX-WIDTH/2, masterMouseY-HEIGHT/2, 30, 30)

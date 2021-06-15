@@ -1,12 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/lennart1s/visualizations/wheel-decide/websocket-server/roomHandler"
+)
+
+const (
+	MAX_ROOMS = 100
 )
 
 var upgrader = websocket.Upgrader{
@@ -17,30 +21,42 @@ var upgrader = websocket.Upgrader{
 var rooms map[string]*roomHandler.RoomHandler
 
 func main() {
-	rooms = make(map[string]*roomHandler.RoomHandler)
+	//TODO: actually check origin
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return true
+	}
 
-	http.HandleFunc("/", handleIndex)
+	rooms = make(map[string]*roomHandler.RoomHandler)
+	go cleanRooms()
+
 	http.HandleFunc("/ws", wsEndpoint)
 	http.HandleFunc("/create-room", creationHandler)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func handleIndex(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World"))
-}
-
 func creationHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Got creation request: ")
+	if len(rooms) >= MAX_ROOMS {
+		log.Println("[WARN] Room maximum reached. Creation request got rejected")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("There are no rooms available. Please try again later"))
+		return
+	}
 
 	r.ParseForm()
-	fmt.Println(r.Form)
+	// TODO: use settings from form
+	settings := make(map[string]string)
+	if val := r.FormValue("max-users"); val != "" {
+		settings["max-clients"] = val
+	}
 
-	rh := roomHandler.New()
-	fmt.Println("Created room with id: " + rh.ID)
-
-	//rooms = append(rooms, rh)
-	//TODO: check if id is in use by mistake
+	rh := roomHandler.NewRoomHandlerFromSettings(settings)
+	if _, ok := rooms[rh.ID]; ok {
+		log.Printf("[ERROR] Room with id '%v' already in use\n", rh.ID)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Sorry, something went wrong.\nPlease try again in a few minutes"))
+		return
+	}
 	rooms[rh.ID] = rh
 
 	w.Header().Add("Content-type", "text/plain")
@@ -50,45 +66,54 @@ func creationHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func wsEndpoint(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint access: " + r.RemoteAddr)
-	roomID, ok := r.URL.Query()["room"]
-
-	if !ok {
-		fmt.Println("No id in url")
-		return
-	} else {
-		fmt.Println(roomID)
-	}
-	upgrader.CheckOrigin = func(r *http.Request) bool {
-		return true
-	}
-
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("[WARN] Couln't create new web socket: " + err.Error())
+		ws.CloseHandler()(4500, "")
+		ws.Close()
 		return
 	}
 
-	log.Println("[INFO] Accepted new ws-connection: " + ws.RemoteAddr().String())
+	params := r.URL.Query()
 
-	//conListener(ws)
-	//roomHandler
+	roomID, rIDok := params["room"]
+	if !rIDok {
+		ws.CloseHandler()(4400, "")
+		ws.Close()
+		return
+	} else if _, ok := rooms[roomID[0]]; !ok {
+		ws.CloseHandler()(4404, "")
+		ws.Close()
+		return
+	}
+
+	clientID, cIDok := params["clientID"]
+
+	if cIDok {
+		rooms[roomID[0]].ReconnectClient(ws, clientID[0])
+		return
+	}
 	rooms[roomID[0]].AddConnection(ws)
 }
 
-func conListener(conn *websocket.Conn) {
+func cleanRooms() {
 	for {
-		msgType, data, err := conn.ReadMessage()
-		if _, ok := err.(*websocket.CloseError); ok {
-			fmt.Println("Close")
-			return
-		} else if err != nil {
-			log.Println("[WARN] Couldn't read message from ws-client: " + err.Error())
-			continue
+		var toDelete []string
+		for id, r := range rooms {
+			cn := 0
+			for _, c := range r.Clients {
+				if c.IsConnected() {
+					cn++
+				}
+			}
+			if cn == 0 {
+				toDelete = append(toDelete, id)
+			}
+		}
+		for _, id := range toDelete {
+			delete(rooms, id)
 		}
 
-		fmt.Println("Received: " + string(data))
-
-		err = conn.WriteMessage(msgType, []byte("I heard you!"))
+		time.Sleep(time.Until(time.Now().Add(20 * time.Second)))
 	}
 }

@@ -2,11 +2,8 @@ package roomHandler
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -21,76 +18,85 @@ type RoomHandler struct {
 
 	Settings map[string]string
 
-	/*Title   string
-	Options []string*/
-
-	WheelRotation float64
-	WheelSpeed    float64
-	MasterMouseX  float64
-	MasterMouseY  float64
+	Data RoomData
 }
 
-func New() *RoomHandler {
-	// Check room amount
-
+func NewRoomHandler() *RoomHandler {
 	rh := &RoomHandler{}
 	rh.ID = nextID()
+	rh.Settings = make(map[string]string)
+
+	return rh
+}
+
+func NewRoomHandlerFromSettings(settings map[string]string) *RoomHandler {
+	rh := NewRoomHandler()
+	for k, v := range settings {
+		rh.Settings[k] = v
+	}
 
 	return rh
 }
 
 func (rh *RoomHandler) AddConnection(conn *websocket.Conn) {
-	// Check user cap
-	// Maybe password
-	fmt.Println("User connected to room" + rh.ID)
-
-	cid, _ := uuid.NewUUID()
-	conn.WriteMessage(websocket.TextMessage, []byte("cid="+cid.String()))
-	client := &Client{Connection: conn, ID: cid.String()}
-
-	if len(rh.Clients) == 0 {
-		rh.masterID = cid.String()
+	if maxStr, ok := rh.Settings["max-clients"]; ok {
+		if max, _ := strconv.Atoi(maxStr); len(rh.Clients) >= max {
+			conn.CloseHandler()(4002, "")
+			conn.Close()
+			return
+		}
 	}
+
+	client := NewClient(conn)
+	if len(rh.Clients) == 0 {
+		rh.masterID = client.ID
+	}
+	client.MessageHandler = rh.clientMsgHandler
+	client.SendMsg(websocket.TextMessage, []byte("cid="+client.ID+"&urm="+strconv.FormatBool(client.ID == rh.masterID)))
+	rh.sendDataToUsers()
 
 	rh.Clients = append(rh.Clients, client)
-	go rh.connectionListener(conn)
 }
 
-func (rh *RoomHandler) connectionListener(conn *websocket.Conn) {
-	for {
-		_, data, err := conn.ReadMessage()
-		if _, ok := err.(*websocket.CloseError); ok {
-			fmt.Println("lost connection to user: " + conn.RemoteAddr().String())
+func (rh *RoomHandler) ReconnectClient(conn *websocket.Conn, clientID string) {
+	for _, c := range rh.Clients {
+		if c.ID == clientID {
+			c.Reconnect(conn)
+			c.SendMsg(websocket.TextMessage, []byte("cid="+c.ID+"&urm="+strconv.FormatBool(c.ID == rh.masterID)))
+
 			return
-		} else if err != nil {
-			log.Println("[WARN] Couldn't read message from ws-client: " + err.Error())
-			continue
 		}
+	}
 
-		var fdata FrameData
-		err = json.Unmarshal(data, &fdata)
-		if fdata.ClientID == rh.masterID {
-			rh.WheelRotation, _ = strconv.ParseFloat(fdata.Rotation, 64)
-			rh.WheelSpeed, _ = strconv.ParseFloat(fdata.Speed, 64)
-			rh.MasterMouseX, _ = strconv.ParseFloat(fdata.MouseX, 64)
-			rh.MasterMouseY, _ = strconv.ParseFloat(fdata.MouseY, 64)
+	rh.AddConnection(conn)
+}
 
-			rh.sendFrameDataToUsers()
+func (rh *RoomHandler) clientMsgHandler(c *Client, data []byte) {
+	if c.ID == rh.masterID {
+		var rd RoomData
+		err := json.Unmarshal(data, &rd)
+		if err != nil {
+			//TODO: Handle error
+			return
 		}
+		rh.Data = rd
+		rh.Data.Clients = len(rh.Clients)
+		rh.sendDataToUsers()
 	}
 }
 
-func (rh *RoomHandler) sendFrameDataToUsers() {
+func (rh *RoomHandler) sendDataToUsers() {
+	cn := 0
 	for _, c := range rh.Clients {
-		if c.ID != rh.masterID {
-			fd := FrameData{
-				Rotation: strconv.FormatFloat(rh.WheelRotation, 'f', 8, 64),
-				Speed:    strconv.FormatFloat(rh.WheelSpeed, 'f', 8, 64),
-				MouseX:   strconv.FormatFloat(rh.MasterMouseX, 'f', 8, 64),
-				MouseY:   strconv.FormatFloat(rh.MasterMouseY, 'f', 8, 64),
-			}
-			c.Connection.WriteJSON(fd)
+		if c.IsConnected() {
+			cn++
 		}
+	}
+	rh.Data.Clients = cn
+	data, _ := json.Marshal(rh.Data)
+
+	for _, c := range rh.Clients {
+		c.SendMsg(websocket.TextMessage, data)
 	}
 }
 
@@ -107,17 +113,4 @@ func nextID() string {
 	}
 
 	return string(idSeed)
-}
-
-type Client struct {
-	Connection *websocket.Conn
-	ID         string
-}
-
-type FrameData struct {
-	ClientID string `json:"clientID"`
-	MouseX   string `json:"mouseX"`
-	MouseY   string `json:"mouseY"`
-	Rotation string `json:"rot"`
-	Speed    string `json:"vel"`
 }
