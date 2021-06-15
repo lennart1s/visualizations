@@ -113,6 +113,9 @@ class OptionHandler {
         if (value != undefined) {
             input.value = value
         }
+        if (socket != undefined && !isMaster) {
+            input.disabled = true
+        }
 
         this.menuElem.appendChild(input)
         window.scrollTo(0, document.body.scrollHeight)
