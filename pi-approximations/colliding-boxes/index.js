@@ -4,13 +4,15 @@ var b
 
 var ft = 0
 
+
 function setup() {
     var canvas = createCanvas(800, 800)
     canvas.parent("canvas")
     frameRate(30)
     
-    B = new Box(250, 50, 100000000, -50, color('blue'))
+    B = new Box(250, 50, 10000000000, -50, color('blue'))
     b = new Box(200, 25, 1, 0, color('red'))
+    noLoop()    
 }
 
 function draw() {
