@@ -8,6 +8,7 @@
         <script src="color_palettes.js"></script>
         <script src="index.js"></script>
         <script src="Wheel.js"></script>
+        <script src="controllers.js"></script>
         <script src="canvas.js"></script>
         <script src="client.js"></script>
         <script src="../p5.min.js"></script>
@@ -26,7 +27,6 @@
         <div id="canvas">
 
             <p id="winner" style="display: none">
-                Deine Mutter
             </p>
 
         </div>
@@ -35,8 +35,13 @@
             <input type="text" placeholder="Option 1">
         </div>
         
-        <a id="new-option-btn" class="fa fa-plus-square" onclick="optionHandler.addInput()"></a>
+        <button id="new-option-btn" class="fa fa-plus-square" onclick="optionHandler.addInput()"></button>
         </br>
+
+        <div id="num-clients">
+            <a class="fa fa-user"></a>
+            <p id="num-clients-lbl"></p>
+        </div>
         
     </body>
 

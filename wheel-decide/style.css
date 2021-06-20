@@ -122,6 +122,11 @@ h1 ~ input:hover {
     border-radius: 2rem;
 }
 
+#menu > input:disabled {
+    border: none;
+    box-shadow: none;
+}
+
 @media only screen and (max-device-width: 500px) {
     #menu {
         max-width: 80%;
@@ -144,6 +149,8 @@ h1 ~ input:hover {
     font-size: 2.5rem;
     color: var(--text-color);
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+    background-color: transparent;
+    border: none;
 }
 
 @media only screen and (max-device-width: 500px) {
@@ -152,11 +159,15 @@ h1 ~ input:hover {
 }
 }
 
-#new-option-btn:hover {
+#new-option-btn:enabled:hover {
     transition: 0.4s;
     text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
     transform: scale(1.1);
     animation: pulse 1s linear infinite;
+}
+
+#new-option-btn:disabled {
+    filter: opacity(0.4);
 }
 
 @keyframes pulse {
@@ -225,4 +236,39 @@ h1 ~ input:hover {
 @keyframes disappear {
     from {transform: translate(-50%, -50%) scale(1);}
     to {transform: translate(-50%, -50%) scale(0);}
+}
+
+input:disabled {
+    border: none;
+}
+
+#num-clients {
+    position: absolute;
+    top: 10%;
+    right: 10%;
+
+    color: var(--text-color);
+    font-size: 2.5rem;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    width: fit-content;
+    height: fit-content;
+}
+
+#num-clients > p {
+    transform: translate(0.5rem, -1rem);
+}
+
+@media only screen and (max-device-width: 500px) {
+    #num-clients {
+        position: fixed;
+        right: 10%;
+        top: initial;
+        bottom: 2%;
+
+        font-size: 4rem;
+    }
 }

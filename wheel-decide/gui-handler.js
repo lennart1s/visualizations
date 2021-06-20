@@ -14,7 +14,11 @@ class TitleHandler {
             this.inputElem.classList = ["non-empty-input"]
         }
 
-        serialize()
+        if (socket == undefined || socket.readyState != WebSocket.OPEN) {
+            serialize()
+        } else if (isMaster) {
+            sendData()
+        }
     }
 
     getTitle() {
@@ -34,6 +38,10 @@ class TitleHandler {
         }
 
         return "title="+title
+    }
+
+    disable() {
+        this.inputElem.disabled = true
     }
 
 }
@@ -62,7 +70,11 @@ class OptionHandler {
             
         }
 
-        serialize()
+        if (socket == undefined || socket.readyState != WebSocket.OPEN) {
+            serialize()
+        } else if (isMaster) {
+            sendData()
+        }
     }
 
     getOptions() {
@@ -78,12 +90,16 @@ class OptionHandler {
     }
 
     setOptions(options) {
-        for (i = 0; i < options.length; i++) {
-            if (i == 0) {
-                this.menuElem.children[0].value = options[i]
+        for (let i = 0; i < options.length; i++) {
+            if (i < this.menuElem.children.length) {
+                this.menuElem.children[i].value = options[i]
                 continue
             }
             this.addInput(options[i])
+        }
+        for (let c = this.menuElem.children[options.length]; c != null;) {
+            this.menuElem.removeChild(c)
+            c = this.menuElem.children[options.length]
         }
 
         this.optionChange()
@@ -96,6 +112,9 @@ class OptionHandler {
         input.onchange = () => {this.optionChange()}
         if (value != undefined) {
             input.value = value
+        }
+        if (socket != undefined && !isMaster) {
+            input.disabled = true
         }
 
         this.menuElem.appendChild(input)
@@ -119,6 +138,12 @@ class OptionHandler {
         }
         
         return data
+    }
+
+    disable() {
+        for (let option of this.menuElem.children) {
+            option.disabled = true
+        }
     }
 
 }
@@ -149,6 +174,25 @@ class WinnerPromptHandler {
         setTimeout(() => {
             document.getElementById("winner").style.display = "none"
         }, 500);
+    }
+
+}
+
+class NumClientsHandler {
+
+    elem
+    constructor(elem) {
+        this.elem = elem
+        this.hide()
+    }
+
+    set(numClients) {
+        this.elem.style.display = "flex"
+        this.elem.children[1].innerHTML = numClients
+    }
+
+    hide() {
+        this.elem.style.display = "none"
     }
 
 }
