@@ -11,10 +11,18 @@
     </head>
 
     <body>
-        Pi
+        Pi and Darts
         <div id="canvas">
 
         </div>
+
+        <label for="dpf">Darts per Frame:</label>
+        <input id="dpf" name="dpf" type="number" value="20" min="1" max="250" onchange="settingChange(this)">
+
+        <span>
+            <h2>π ≈ </h2>
+            <h1 id="pi-val">-</h1>
+        </span>
 
     </body>
 

@@ -1,37 +1,52 @@
 let width = 400
-let height = 400
 
 var img
 var qt
 
 function setup() {
-    let canvas = createCanvas(width, height)
+    let canvas = createCanvas(width, width)
     canvas.parent("canvas")
-
+    
     img = loadImage('./panda.jpg', () => {
-        img.resize(width, height)
+        //img.resize(width, height)
+        /*img.resize(width, img.height * width/img.width)
+        height = img.height
         img.loadPixels()
 
-        qt = new QuadTree(0, 0, width, height)
+        let canvas = createCanvas(width, height)
+        canvas.parent("canvas")*/
+        //img.resize(width*height/img.height, height)
+        if (img.width > img.height) {
+            img = img.get((img.width-img.height)/2, 0, img.height, img.height)
+        } else if (img.height > img.width) {
+            img = img.get(0, (img.height-img.width)/2, img.width, img.width)
+        }
+        img.resize(width, width)
+        img.loadPixels()
+
+
+        qt = new QuadTree(0, 0, width, width)
         qt.draw()
     })
 
-    frameRate(5)
+    //frameRate(5)
     noLoop()
-    background(90, 90, 90)
+    background(255, 255, 255)
 }
 
 function mouseMoved() {
-    let clicked = qt.getChilSpanning(mouseX, mouseY)
-    if (clicked == undefined) {
-        return
-    }
-    clicked.divide()
-    clicked.draw()
+    changeTree()
 }
 
 function mouseClicked() {
-    let clicked = qt.getChilSpanning(mouseX, mouseY)
+    changeTree()
+}
+
+function changeTree() {
+    let clicked = qt.getChildSpanning(mouseX, mouseY)
+    if (clicked == undefined) {
+        return
+    }
     clicked.divide()
     clicked.draw()
 }
@@ -65,7 +80,7 @@ class QuadTree {
         return this.x <= x && x < this.x+this.w && this.y <= y && y < this.y+this.h
     }
 
-    getChilSpanning(x, y) {
+    getChildSpanning(x, y) {
         if (this.isSpanning(x, y)) {
             if (this.tl == null || this.tl == undefined) {
                 return this
@@ -73,7 +88,7 @@ class QuadTree {
 
             for (let c of [this.tl, this.tr, this.bl, this.br]) {
                 if (c.isSpanning(x, y)) {
-                    return c.getChilSpanning(x, y)
+                    return c.getChildSpanning(x, y)
                 }
             }
         }

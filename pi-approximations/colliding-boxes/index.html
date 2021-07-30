@@ -19,6 +19,16 @@
         </div>
         <button onclick="loop(); deltaTime=0">Loop</button>
 
+        <label for="m">Little mass:</label>
+        <input id="m" name="m" type="number" value="1" disabled>
+        
+        <label for="M">Big mass:</label>
+        <input id="M" name="M" type="number" value="1000000" min="1" onchange="settingChange(this)">
+
+        <h2>Collisions:</h2>
+        <h1 id="num-cols">0</h1>
+
+
     </body>
 
 </html>

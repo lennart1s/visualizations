@@ -4,14 +4,16 @@ var b
 
 var ft = 0
 
-
 function setup() {
-    var canvas = createCanvas(800, 800)
+    var canvas = createCanvas(800, 300)
     canvas.parent("canvas")
     frameRate(30)
     
-    B = new Box(250, 50, 10000000000, -50, color('blue'))
-    b = new Box(200, 25, 1, 0, color('red'))
+    let M = document.getElementById("M").value
+    let m = document.getElementById("m").value
+
+    B = new Box(250, 50, Number(M), -50, color('blue'))
+    b = new Box(200, 25, Number(m), 0, color('red'))
     noLoop()    
 }
 
@@ -26,14 +28,18 @@ function draw() {
 
     B.draw()
     b.draw()
+
+    document.getElementById("num-cols").innerHTML = collisions
 }
 
 function process() {
+    running = true
     while (true) {
         //Absolute end:
         if (B.vel > 0 && abs(b.vel) < B.vel) {
             noLoop()
             console.log("end " + collisions)
+            running = false
             return
         }
 
@@ -69,4 +75,22 @@ function process() {
             break
         }
     }
+}
+
+function settingChange(elem) {
+    //console.log(elem.value)
+    switch (elem.id) {
+    case "M":
+        //if (!running) {
+            B.mass = Number(elem.value)
+        //}
+        if (Math.log10(elem.value)%2 != 0) {
+            // SHOW INFO THAT THIS WONT APPROXIMATE PI
+        } else {
+            // HIDE INFO
+        }
+
+        break
+    }
+
 }

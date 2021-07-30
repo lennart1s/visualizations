@@ -1,11 +1,16 @@
 let WIDTH = 600
 let HEIGHT = 600
 
-let DPF = 50
+let DPF
 let TOTAL = 0
 let HITS = 0
 
+let framesSinceLog = 0
+
 function setup() {
+
+    DPF = document.getElementById("dpf").value
+
     let canvas = createCanvas(WIDTH, HEIGHT)
     canvas.parent("canvas")
 
@@ -36,6 +41,23 @@ function draw() {
 
     let circleA = width*height * HITS/TOTAL
     let pi = circleA / pow(width/2, 2)
-    console.log(pi)
+    //console.log(pi)
 
+    framesSinceLog++
+    if (framesSinceLog >= 30) {
+        document.getElementById("pi-val").innerHTML = pi
+        framesSinceLog = 0
+
+        let error = abs((pi / Math.PI - 1)*1000)
+        console.log("error: " + error + "‰")
+    }
+}
+
+function settingChange(elem) {
+    console.log(elem.value)
+    switch (elem.id) {
+        case "dpf":
+            DPF = elem.value
+            break
+    }
 }
