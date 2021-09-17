@@ -109,7 +109,7 @@ function draw() {
 
         passes++
 
-        } while ((new p5.Vector(targetX, targetY).dist(points[points.length-1])) > 2 && passes < 20)
+        } while (passes < 10)
     }
 
     for (b of bones) {
