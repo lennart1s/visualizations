@@ -155,7 +155,7 @@ function savePreset() {
 
 function loadPreset() {
     running = false
-    data = JSON.parse(localStorage.getItem('cloth')) || {points:[]}
+    data = JSON.parse(localStorage.getItem('cloth')) || {points:[], sticks:[]}
     // let data = {"points":[{"x":-511.3500061035156,"y":309.3999996185303,"z":0,"color":{"mode":"rgb","maxes":{"rgb":[255,255,255,255],"hsb":[360,100,100,1],"hsl":[360,100,100,1]},"_array":[1,1,1,1],"levels":[255,255,255,255]},"prev":{"x":-511.3500061035156,"y":309.3999996185303,"z":0},"id":0}],"sticks":[]}
 
     points = []
