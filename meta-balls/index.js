@@ -63,7 +63,8 @@ async function main() {
   gl.enableVertexAttribArray(0)
   gl.bindBuffer(gl.ARRAY_BUFFER, null)
 
-  let numCharges = 28
+  let numCharges = Math.floor(0.000013*WIDTH*HEIGHT)
+  console.log(`Simulating ${numCharges} meta balls.`)
   let chargeSize = 350
   let charges = []
   for (let i = 0; i < numCharges; i++) {
