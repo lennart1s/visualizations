@@ -1,96 +1,131 @@
+const FPS_CAP = 60
+let WIDTH
+let HEIGHT
+
 window.onload = main
 
-var vbo
-var shaderProgram
+let deltaTime = 1/0
 
 async function main() {
   const canvas = document.getElementById("glCanvas")
-  const gl = canvas.getContext("webgl")
-
+  WIDTH = window.innerWidth
+  HEIGHT = window.innerHeight
+  canvas.width = WIDTH
+  canvas.height = HEIGHT
+  var gl = canvas.getContext("webgl")
   if (!gl) {
     alert("Unable to initialize WebGL")
     return
   }
-
-  await initShaders(gl)
-  
-  initBuffer(gl)
   
   gl.enable(gl.BLEND)
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-  gl.clearColor(0.0, 0.05, 0.12, 1.0)
+  gl.clearColor(0.0, 0.0, 0.0, 1.0)
   
-  gl.clear(gl.COLOR_BUFFER_BIT)
 
-  /*let posMatrixUniform = gl.getUniformLocation(shaderProgram, 'posMatrix')
-  
-  gl.bindBuffer(gl.ARRAY_BUFFER, vbo)
-  gl.vertexAttribPointer(vbo, 3, gl.FLOAT, false, 0, 0)
-  gl.enableVertexAttribArray(vbo)
-  gl.uniformMatrix4fv(posMatrixUniform, false, new Float32Array([0.25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]))
-  gl.drawArrays(gl.POINTS, 0, 4)*/
-  
-  gl.bindBuffer(gl.ARRAY_BUFFER, vbo)
-  gl.vertexAttribPointer(vbo, 3, gl.FLOAT, false, 0, 0)
-  gl.enableVertexAttribArray(vbo)
+  // Texture and FBO setup
+  let chargeTexture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, chargeTexture)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, WIDTH, HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  let chargeTextureFBO = gl.createFramebuffer()
+  gl.bindFramebuffer(gl.FRAMEBUFFER, chargeTextureFBO)
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, chargeTexture, 0)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null)
 
-  for (let i = 0; i < 100; i++) {
-    gl.clear(gl.COLOR_BUFFER_BIT)
-    drawPoint(gl, -0.5+i/100, 0.0, 30)
-    await sleep(20)
-  }
+  /* let metaTexture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, metaTexture)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 640, 480, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  let metaTextureFBO = gl.createFramebuffer()
+  gl.bindFramebuffer(gl.FRAMEBUFFER, metaTextureFBO)
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, metaTexture, 0)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null) */
 
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function drawPoint(gl, x, y, r) {
-  let translationVecPos = gl.getUniformLocation(shaderProgram, 'translation')
-  gl.uniform3fv(translationVecPos, new Float32Array([x, y, 0.0]))
-
-  let radiusPos = gl.getUniformLocation(shaderProgram, 'radius')
-  gl.uniform1f(radiusPos, r)
-
-  gl.drawArrays(gl.POINTS, 0, 1)
-}
-
-function initBuffer(gl) {
-  vbo = gl.createBuffer()
-  gl.bindBuffer(gl.ARRAY_BUFFER, vbo)
-
+  await Charge.init(gl)
+  await Quad.init(gl)
+  let metaShader = await loadShadersToProgram(gl, 'metaShader', './metaFragShader.glsl', './metaVertShader.glsl')
+  let windowUniPos = gl.getUniformLocation(metaShader, 'window')
+  let metaVBO = gl.createBuffer()
+  gl.bindBuffer(gl.ARRAY_BUFFER, metaVBO)
   var vertices = [
-    0.0, 0.0, 0.0
+    0.0, 0.0,
+    0.0, 1.0,
+    1.0, 0.0,
+    1.0, 1.0,
   ]
-
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
-}
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+  gl.enableVertexAttribArray(0)
+  gl.bindBuffer(gl.ARRAY_BUFFER, null)
 
-async function initShaders(gl) {
-  var fragShader = await getShader(gl, 'http://localhost:5500/meta-balls/fragShader.glsl', gl.FRAGMENT_SHADER)
-  var vertShader = await getShader(gl, 'http://localhost:5500/meta-balls/vertShader.glsl', gl.VERTEX_SHADER)
-
-  shaderProgram  = gl.createProgram()
-  gl.attachShader(shaderProgram, vertShader)
-  gl.attachShader(shaderProgram, fragShader)
-  gl.linkProgram(shaderProgram)
-
-  gl.useProgram(shaderProgram)
-}
-
-async function getShader(gl, url, type) {
-  let resp = await fetch(url)
-  let source = await resp.text()
+  let numCharges = 28
+  let chargeSize = 350
+  let charges = []
+  for (let i = 0; i < numCharges; i++) {
+    charges.push(new Charge(Math.random()*WIDTH, Math.random()*HEIGHT, chargeSize))
+  }
   
-  let shader = gl.createShader(type)
-  gl.shaderSource(shader, source)
-  gl.compileShader(shader)
+  let chargeTextureQuad = new Quad(-1, -1, 0.5, 0.5)
+  chargeTextureQuad.texture = chargeTexture
 
-  var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-  console.log(type + 'Shader compiled successfully: ' + compiled);
-  var compilationLog = gl.getShaderInfoLog(shader);
-console.log(type + 'Shader compiler log: ' + compilationLog);
+  /* let metaTextureQuad = new Quad(-0.5, -0.5, 1, 1)
+  metaTextureQuad.texture = metaTexture */
 
-  return shader
+  let lastTime = Date.now()-1
+  while (true) {
+    let now = Date.now()
+    deltaTime = now - lastTime
+    if (deltaTime < 1000/FPS_CAP) {
+      await Sleep(1000/FPS_CAP - deltaTime)
+      continue
+    }
+    lastTime = now
+
+    for (let c of charges) {
+      c.move();
+    }
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, chargeTextureFBO)
+    gl.clearColor(0.0, 0.0, 0.0, 1.0)
+    gl.clear(gl.COLOR_BUFFER_BIT)
+    Charge.prepareRender(gl)
+    for (let c of charges) {
+      c.render(gl);
+    }
+    Charge.postpareRender(gl)
+
+
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    gl.clearColor(0.0, 0.0, 0.0, 0.9)
+    gl.clear(gl.COLOR_BUFFER_BIT)
+
+    gl.useProgram(metaShader)
+    gl.bindBuffer(gl.ARRAY_BUFFER, metaVBO)
+
+    gl.bindTexture(gl.TEXTURE_2D, chargeTexture)
+    gl.uniform2fv(windowUniPos, new Float32Array([WIDTH, HEIGHT]))
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+
+    gl.useProgram(null)
+    gl.bindBuffer(gl.ARRAY_BUFFER, null)
+
+
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    Quad.prepareRender(gl)
+    // chargeTextureQuad.render(gl)
+    Quad.postpareRender(gl)
+
+    // break
+  }
+}
+
+function Sleep(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
