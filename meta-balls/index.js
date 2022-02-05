@@ -2,7 +2,26 @@ const FPS_CAP = 60
 let WIDTH
 let HEIGHT
 
+let charges = []
+
 window.onload = main
+let ct
+let lastResizeTimeout
+window.onresize = () => {
+  clearTimeout(lastResizeTimeout)
+  lastResizeTimeout = setTimeout(() => {
+    const canvas = document.getElementById("glCanvas")
+    WIDTH = window.innerWidth
+    HEIGHT = window.innerHeight
+    canvas.width = WIDTH
+    canvas.height = HEIGHT
+    let gl = canvas.getContext("webgl")
+    gl.viewport(0, 0, WIDTH, HEIGHT)
+    gl.bindTexture(gl.TEXTURE_2D, ct)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, WIDTH, HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    generateCharges()
+  }, 500);
+}
 
 let deltaTime = 1/0
 
@@ -23,8 +42,8 @@ async function main() {
   gl.clearColor(0.0, 0.0, 0.0, 1.0)
   
 
-  // Texture and FBO setup
   let chargeTexture = gl.createTexture()
+  ct = chargeTexture
   gl.bindTexture(gl.TEXTURE_2D, chargeTexture)
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, WIDTH, HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -35,16 +54,6 @@ async function main() {
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, chargeTexture, 0)
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
 
-  /* let metaTexture = gl.createTexture()
-  gl.bindTexture(gl.TEXTURE_2D, metaTexture)
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 640, 480, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  let metaTextureFBO = gl.createFramebuffer()
-  gl.bindFramebuffer(gl.FRAMEBUFFER, metaTextureFBO)
-  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, metaTexture, 0)
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null) */
 
   await Charge.init(gl)
   await Quad.init(gl)
@@ -63,13 +72,7 @@ async function main() {
   gl.enableVertexAttribArray(0)
   gl.bindBuffer(gl.ARRAY_BUFFER, null)
 
-  let numCharges = Math.floor(0.000013*WIDTH*HEIGHT)
-  console.log(`Simulating ${numCharges} meta balls.`)
-  let chargeSize = 350
-  let charges = []
-  for (let i = 0; i < numCharges; i++) {
-    charges.push(new Charge(Math.random()*WIDTH, Math.random()*HEIGHT, chargeSize))
-  }
+  generateCharges()
   
   let chargeTextureQuad = new Quad(-1, -1, 0.5, 0.5)
   chargeTextureQuad.texture = chargeTexture
@@ -94,6 +97,7 @@ async function main() {
     gl.bindFramebuffer(gl.FRAMEBUFFER, chargeTextureFBO)
     gl.clearColor(0.0, 0.0, 0.0, 1.0)
     gl.clear(gl.COLOR_BUFFER_BIT)
+
     Charge.prepareRender(gl)
     for (let c of charges) {
       c.render(gl);
@@ -122,8 +126,24 @@ async function main() {
     Quad.prepareRender(gl)
     // chargeTextureQuad.render(gl)
     Quad.postpareRender(gl)
+  }
+}
 
-    // break
+function generateCharges() {
+  let numCharges = Math.floor(0.000013*WIDTH*HEIGHT)
+  console.log(`Simulating ${numCharges} meta balls.`)
+  let chargeSize = 350
+  while (charges.length < numCharges) {
+    charges.push(new Charge(Math.random()*WIDTH, Math.random()*HEIGHT, chargeSize))
+  }
+  deleteLoop: while (charges.length > numCharges) {
+    for (let i = 0; i < charges.length; i++) {
+      if (charges[i].x < 0 || charges[i].x >= WIDTH || charges[i].y < 0 || charges[i].y >= HEIGHT) {
+        charges.splice(i, 1)
+        continue deleteLoop
+      }
+    }
+    charges.splice(0, 1)
   }
 }
 
