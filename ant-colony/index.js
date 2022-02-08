@@ -1,5 +1,5 @@
 const FPS_CAP = 60
-const NUM_AGENTS = 20
+const NUM_AGENTS = 50 // 1280*720/4
 
 let deltaTime = 0
 
@@ -46,9 +46,25 @@ async function main() {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   gl.bindTexture(gl.TEXTURE_2D, null)
 
+
+  let copyAgentsTexture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, copyAgentsTexture)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1280, 720, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  let copyAgentsTextureFBO = gl.createFramebuffer()
+  gl.bindFramebuffer(gl.FRAMEBUFFER, copyAgentsTextureFBO)
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, copyAgentsTexture, 0)
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+  gl.bindTexture(gl.TEXTURE_2D, null)
+
   let agentsTexture = gl.createTexture()
   gl.bindTexture(gl.TEXTURE_2D, agentsTexture)
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1280, 720, 0, gl.RGBA, gl.UNSIGNED_BYTE, agentsImg);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1280, 720, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -56,10 +72,13 @@ async function main() {
   let agentsTextureFBO = gl.createFramebuffer()
   gl.bindFramebuffer(gl.FRAMEBUFFER, agentsTextureFBO)
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, agentsTexture, 0)
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT)
   gl.bindFramebuffer(gl.FRAMEBUFFER, null)
   gl.bindTexture(gl.TEXTURE_2D, null)
 
   let copyShader = await loadShadersToProgram(gl, './copyFragShader.glsl', './copyVertShader.glsl')
+  let diffuseShader = await loadShadersToProgram(gl, './diffuseFragShader.glsl', './diffuseVertShader.glsl')
   let moveShader = await loadShadersToProgram(gl, './moveFragShader.glsl', './moveVertShader.glsl')
   let moveDeltaTimeUniPos = gl.getUniformLocation(moveShader, 'deltaTime')
 
@@ -98,33 +117,32 @@ async function main() {
   
   
   await Quad.init(gl)
-  let initSample = new Quad(-0.7, 0.7, 0.5, 0.4)
-  initSample.texture = prevDataTexture
-  let dataSample = new Quad(7.0, 7.0, 16.0, 16.0)
+  //let dataSample = new Quad(7.0, 7.0, 16.0, 16.0)
+  let dataSample = new Quad(0.0, 0.0, 2.0, 2.0)
   dataSample.texture = dataTexture
   let agentSample = new Quad(0.0, 0.0, 1.8, 1.8)
   agentSample.texture = agentsTexture
 
   let lastTime = Date.now()-1
+  let i = 0
+  let deltaSum = 0
   while (true) {
     let now = Date.now()
     deltaTime = now - lastTime
     if (deltaTime < 1000/FPS_CAP) {
+      let start = Date.now()
       await Sleep(1000/FPS_CAP - deltaTime)
       continue
     }
     lastTime = now
 
-
-    /*gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT)
-    gl.useProgram(moveShader)
-    gl.bindVertexArray(moveVAO)
-    gl.bindTexture(gl.TEXTURE_2D, initAgentsTexture)
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-    gl.bindVertexArray(null)
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null)*/
+    deltaSum += deltaTime
+    i++
+    if (i >= FPS_CAP) {
+      console.log(`FPS: ${Math.floor(1000/(deltaSum/i)+0.5)}`)
+      i = 0
+      deltaSum = 0
+    }
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, dataTextureFBO)
     gl.clearColor(0.0, 0.0, 0.0, 0.0);
@@ -137,13 +155,26 @@ async function main() {
     gl.bindVertexArray(null)
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, agentsTextureFBO)
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT)
     gl.useProgram(drawShader)
     gl.bindVertexArray(drawVAO)
     gl.bindTexture(gl.TEXTURE_2D, dataTexture)
     gl.drawArrays(gl.POINTS, 0, NUM_AGENTS)
     gl.bindVertexArray(null)
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, copyAgentsTextureFBO)
+    gl.useProgram(copyShader)
+    gl.bindVertexArray(moveVAO)
+    gl.bindTexture(gl.TEXTURE_2D, agentsTexture)
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    gl.bindVertexArray(null)
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, agentsTextureFBO)
+    gl.useProgram(diffuseShader)
+    gl.bindVertexArray(moveVAO)
+    gl.bindTexture(gl.TEXTURE_2D, copyAgentsTexture)
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    gl.bindVertexArray(null)
+
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, prevDataTextureFBO)
     gl.clearColor(0.0, 0.0, 0.0, 0.0);
@@ -156,12 +187,11 @@ async function main() {
     
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-    gl.clearColor(0.3, 0.3, 0.3, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT)
 
 
     Quad.prepareRender(gl)
-    //initSample.render(gl)
     dataSample.render(gl)
     agentSample.render(gl)
     Quad.postpareRender(gl)
@@ -171,31 +201,39 @@ async function main() {
 }
 
 function createAgents() {
+  //let data = new Uint8Array(1280*720*4)
   let data = new Uint8Array(1280*720*4)
 
   for (let i = 0; i < NUM_AGENTS; i++) {
-    //let y = intToVec2(20*(i+1))
-    //let velX = intToVec2(i)
-    let posX = floatToVec3(100)
-    let posY = floatToVec3(20*(i+1))
-    let velX = floatToVec3(i*10)
-    let velY = floatToVec3(0)
+    let posX = floatToVec3(Math.random()*1280)
+    let posY = floatToVec3(Math.random()*720)
+    //let velX = floatToVec3((Math.random()*220+10)*Math.sign(Math.random()-0.5))
+    //let velY = floatToVec3((Math.random()*220+10)*Math.sign(Math.random()-0.5))
+    let dir = floatToVec3(Math.random()*2*Math.PI)
     data[i*16] = posX.x
     data[i*16+1] = posX.y
-    data[i*16+2] = posX.Z
+    data[i*16+2] = posX.z
     data[i*16+3] = 255
     data[i*16+4] = posY.x
     data[i*16+5] = posY.y
     data[i*16+6] = posY.z
     data[i*16+7] = 255
-    data[i*16+8] = velX.x
+    data[i*16+8] = dir.x
+    data[i*16+9] = dir.y
+    data[i*16+10] = dir.z
+    data[i*16+11] = 255
+    data[i*16+12] = 0
+    data[i*16+13] = 0
+    data[i*16+14] = 0
+    data[i*16+15] = 255
+    /*data[i*16+8] = velX.x
     data[i*16+9] = velX.y
     data[i*16+10] = velX.z
     data[i*16+11] = 255
     data[i*16+12] = velY.x
     data[i*16+13] = velY.y
     data[i*16+14] = velY.z
-    data[i*16+15] = 255
+    data[i*16+15] = 255*/
   }
   
   return data

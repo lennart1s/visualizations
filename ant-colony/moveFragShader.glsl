@@ -99,6 +99,7 @@ float vec3ToFloat(vec3 vec) {
 }
 
 void main(void) {
+  float speed = 100.0;
   float xPerPix = 1.0 / 1280.0;
   float yPerPix = 1.0 / 720.0;
 
@@ -109,26 +110,38 @@ void main(void) {
 
   gl_FragColor = data;
 
-  if (uv.y < yPerPix) { // bottom row
-    if (mod(uv.x/xPerPix, 4.0) < 1.0) { // posX
-      //float posX = vec4ToFloat(vec4(0.0, 0.0, data.xy*255.0));
-      float posX = vec3ToFloat(data.xyz*255.0);
-
-      vec4 velXData = texture2D(texture, vec2(uv.x+2.0*xPerPix, uv.y));
-      //float velX = vec4ToFloat(vec4(0.0, 0.0, velXData.xy*255.0));
-      float velX = vec3ToFloat(velXData.xyz*255.0);
-
-      //vec4 vec = floatToVec4(posX+(velX*(deltaTime/1000.0)));
-      vec3 vec = floatToVec3(posX+(velX*(deltaTime/1000.0)));
-      //vec4 vec = floatToVec4(posX+velX);
-      gl_FragColor = vec4(vec.xyz/255.0, 1.0);
-    } else if (mod(uv.x/xPerPix, 4.0) < 2.0) { // posY
-      //gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-    } else if (mod(uv.x/xPerPix, 4.0) < 3.0) {  // velX
-      //gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
-    } else if (mod(uv.x/xPerPix, 4.0) < 4.0) {  // velY
-      //gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+  if (mod(uv.x/xPerPix, 4.0) < 1.0) { // posX
+    float posX = vec3ToFloat(data.xyz*255.0);
+    vec4 dirData = texture2D(texture, vec2(uv.x+2.0*xPerPix, uv.y));
+    float dir = vec3ToFloat(dirData.xyz*255.0);
+    vec3 vec = floatToVec3(posX+(cos(dir)*speed*(deltaTime/1000.0)));
+    gl_FragColor = vec4(vec.xyz/255.0, 1.0);
+  } else if (mod(uv.x/xPerPix, 4.0) < 2.0) { // posY
+    float posY = vec3ToFloat(data.xyz*255.0);
+    vec4 dirData = texture2D(texture, vec2(uv.x+1.0*xPerPix, uv.y));
+    float dir = vec3ToFloat(dirData.xyz*255.0);
+    vec3 vec = floatToVec3(posY+(sin(dir)*speed*(deltaTime/1000.0)));
+    gl_FragColor = vec4(vec.xyz/255.0, 1.0);
+  } else if (mod(uv.x/xPerPix, 4.0) < 3.0) {  // velX
+    float velX = vec3ToFloat(data.xyz*255.0);
+    vec4 posXData = texture2D(texture, vec2(uv.x-2.0*xPerPix, uv.y));
+    float posX = vec3ToFloat(posXData.xyz*255.0);
+    float nextX = posX + velX*(deltaTime/1000.0);
+    if (nextX < 0.0 || nextX >= 1280.0) {
+      velX *= -1.0;
     }
+    vec3 vec = floatToVec3(velX);
+    gl_FragColor = vec4(vec.xyz/255.0, 1.0);
+  } else if (mod(uv.x/xPerPix, 4.0) < 4.0) {  // velY
+    float velY = vec3ToFloat(data.xyz*255.0);
+    vec4 posYData = texture2D(texture, vec2(uv.x-2.0*xPerPix, uv.y));
+    float posY = vec3ToFloat(posYData.xyz*255.0);
+    float nextY = posY + velY*(deltaTime/1000.0);
+    if (nextY < 0.0 || nextY >= 720.0) {
+      velY *= -1.0;
+    }
+    vec3 vec = floatToVec3(velY);
+    gl_FragColor = vec4(vec.xyz/255.0, 1.0);
   }
 }
 
