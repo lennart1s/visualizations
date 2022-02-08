@@ -3,6 +3,7 @@ precision highp float;
 attribute float index;
 
 uniform sampler2D texture;
+uniform vec2 window;
 
 /* vec4 floatToVec4(float val) {
   float x = float(int(val / pow(2.0, 24.0)));
@@ -98,15 +99,15 @@ float vec3ToFloat(vec3 vec) {
 }
 
 void main(void) {
-  gl_PointSize = 2.0; // 2.0
+  gl_PointSize = 1.0; // 2.0
 
-  float xPerPix = 2.0 / 1280.0; // TODO; check theese values by displaying in fragShader
-  float yPerPix = 2.0 / 720.0;
+  float xPerPix = 2.0 / window.x; // TODO; check theese values by displaying in fragShader
+  float yPerPix = 2.0 / window.y;
 
-  vec4 posXData = texture2D(texture, vec2(xPerPix*mod(index, 320.0)*2.0+0.25*xPerPix, 0.25*yPerPix*float(int(index / 320.0))));
+  vec4 posXData = texture2D(texture, vec2(xPerPix*mod(index, window.x/4.0)*2.0+0.25*xPerPix, 0.25*yPerPix*float(int(index / (window.x/4.0)))));
   //float posX = vec4ToFloat(vec4(0.0, 0.0, posXData.xy*255.0));
   float posX = vec3ToFloat(vec3(posXData.xyz*255.0));
-  vec4 posYData = texture2D(texture, vec2(xPerPix*mod(index, 320.0)*2.0+0.75*xPerPix, 0.25*yPerPix*float(int(index / 320.0))));
+  vec4 posYData = texture2D(texture, vec2(xPerPix*mod(index, window.x/4.0)*2.0+0.75*xPerPix, 0.25*yPerPix*float(int(index / (window.x/4.0)))));
   float posY = vec3ToFloat(vec3(posYData.xyz*255.0));
 
   /* vec4 velXData = texture2D(texture, vec2(xPerPix*index*2.0+1.25*xPerPix, 0.25*yPerPix));
@@ -116,8 +117,8 @@ void main(void) {
   
   posX += velX; */
 
-  mat4 scale = mat4(2.0/1280.0, 0.0, 0.0, 0.0,
-                          0.0, -2.0/720.0, 0.0, 0.0,
+  mat4 scale = mat4(2.0/window.x, 0.0, 0.0, 0.0,
+                          0.0, -2.0/window.y, 0.0, 0.0,
                           0.0,       0.0, 1.0, 0.0,
                           0.0,       0.0, 0.0, 1.0);
   mat4 transl = mat4(1.0, 0.0, 0.0, 0.0,
