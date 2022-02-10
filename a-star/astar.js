@@ -4,6 +4,9 @@ let dest
 function astar(steps) {
     start = findStartNode()
     dest = findDestNode()
+    if (!start || !dest) {
+        return
+    }
 
     open = []
     closed = []
@@ -89,6 +92,10 @@ class Node {
         this.g = this.parent.g+Math.sqrt(Math.pow(this.x-this.parent.x, 2)+Math.pow(this.y-this.parent.y, 2))
         this.h = Math.sqrt(Math.pow(dest.x-this.x, 2) + Math.pow(dest.y-this.y, 2))
         this.f = this.g + this.h
+
+        if (cells[this.x][this.y] == EMPTY) {
+            cells[this.x][this.y] = -this.h
+        }
     }
 
     getSuccessors() {

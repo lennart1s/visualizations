@@ -77,7 +77,7 @@ function draw() {
                 fill(30, 10, 160)
             } else if (cells[x][y] < 0) {
                 let val = abs(cells[x][y])
-                fill(255, 255, map(val, 10, 20, 255, 0))
+                fill(255, 255, map(val, abs(minOf2D(cells).value), abs(maxOf2D(cells).value), 255, 0))
             }
             
             rect(x*ppc, y*ppc, ppc, ppc)
@@ -96,7 +96,9 @@ function draw() {
 
 }
 
-function processAstar(steps) {
+let steps = 0
+function processAstar(s) {
+    steps += s
     for (let x = 0; x < WIDTH; x++) {
         for (let y = 0; y < HEIGHT; y++) {
             if (cells[x][y] == PATH) {
@@ -108,7 +110,7 @@ function processAstar(steps) {
     let q = astar(steps)
     while (q) {
         console.log(q.x, q.y)
-        cells[q.x][q.y] = cells[q.x][q.y] == EMPTY ? PATH : cells[q.x][q.y]
+        cells[q.x][q.y] = cells[q.x][q.y] <= 0 ? PATH : cells[q.x][q.y]
         q = q.parent
     }
 }
@@ -122,14 +124,13 @@ function mousePressed() {
     let x = Math.floor(mouseX / ppc)
     let y = Math.floor(mouseY / ppc)
 
-    if (currentCellType == START || currentCellType == DEST) {
-        for (let i = 0; i < WIDTH; i++) {
-            for (let j = 0; j < HEIGHT; j++) {
-                if (cells[i][j] == currentCellType && (i != x || j != y)) {
-                    cells[i][j] = EMPTY
-                }
-            }
-        }
+    let startNode = findStartNode()
+    if (startNode && currentCellType == START) {
+        cells[startNode.x][startNode.y] = EMPTY
+    }
+    let destNode = findDestNode()
+    if (destNode && currentCellType == DEST) {
+        cells[destNode.x][destNode.y] = EMPTY
     }
 
     cells[x][y] = (cells[x][y] != currentCellType) ? currentCellType : EMPTY
@@ -158,5 +159,53 @@ function findDestNode() {
                 return {x, y}
             }
         }
+    }
+}
+
+function minOf2D(array) {
+    let minVal = 0
+    let minX = -1
+    let minY = -1
+    for (let x = 0; x < array.length; x++) {
+        for (let y = 0; y < array[x].length; y++) {
+            if (array[x][y] > 0) {
+                continue
+            }
+            if (array[x][y] < minVal || minX == -1 || minY == -1) {
+                minVal = array[x][y]
+                minX = x
+                minY = y
+            }
+        }
+    }
+
+    return {
+        value: minVal,
+        x: minX,
+        y: minY,
+    }
+}
+
+function maxOf2D(array) {
+    let maxVal = 0
+    let maxX = -1
+    let maxY = -1
+    for (let x = 0; x < array.length; x++) {
+        for (let y = 0; y < array[x].length; y++) {
+            if (array[x][y] > 0) {
+                continue
+            }
+            if (array[x][y] > maxVal || maxX == -1 || maxY == -1) {
+                maxVal = array[x][y]
+                maxX = x
+                maxY = y
+            }
+        }
+    }
+
+    return {
+        value: maxVal,
+        x: maxX,
+        y: maxY,
     }
 }
