@@ -1,5 +1,5 @@
 const FPS_CAP = 60
-const NUM_AGENTS = 250000 // 1280*720/4    250000
+const NUM_AGENTS = 150000 // 1280*720/4    250000
 let WIDTH = 0
 let HEIGHT = 0
 
@@ -24,8 +24,8 @@ async function main() {
   gl.clearColor(0.0, 0.0, 0.0, 1.0)
 
   
-  //let agentsImg = createAgents()
-  let agentsImg = createBallAgents()
+  let agentsImg = createAgents()
+  // let agentsImg = createBallAgents()
   let prevDataTexture = gl.createTexture()
   gl.bindTexture(gl.TEXTURE_2D, prevDataTexture)
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, WIDTH, HEIGHT, 0, gl.RGBA, gl.UNSIGNED_BYTE, agentsImg);

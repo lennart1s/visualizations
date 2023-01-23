@@ -124,7 +124,7 @@ async function main() {
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null)
     Quad.prepareRender(gl)
-    // chargeTextureQuad.render(gl)
+    chargeTextureQuad.render(gl)
     Quad.postpareRender(gl)
   }
 }
